@@ -25,7 +25,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.0';
+	const SCRIPT_VERSION = '0.5.1';
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 
@@ -148,12 +148,14 @@ http://www.graphicartsunit.com/
 					case 'horizontal-0' :
 					case 'horizontal-1' :
 					case 'horizontal-2' :
-						if(settings.horizontal !== -1 && thisObj.lineHorizontal[settings.horizontal].value) thisObj.lineHorizontal[settings.horizontal].value = false;
+						event.target.value = true;
+						if(settings.horizontal !== -1) thisObj.lineHorizontal[settings.horizontal].value = false;
 						break;
 					case 'vertical-0' :
 					case 'vertical-1' :
 					case 'vertical-2' :
-						if(settings.vertical !== -1 && thisObj.lineVertical[settings.vertical].value) thisObj.lineVertical[settings.vertical].value = false;
+						event.target.value = true;
+						if(settings.vertical !== -1) thisObj.lineVertical[settings.vertical].value = false;
 						break;
 					default :
 						break;
