@@ -25,7 +25,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.1';
+	const SCRIPT_VERSION = '0.5.5';
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 
@@ -40,32 +40,32 @@ http://www.graphicartsunit.com/
 	};
 	MainDialog.prototype.init = function() {
 
-		var unit = 20;
+		var unit = 10;
 		var thisObj = this;
 
 		thisObj.dlg = new Window('dialog', SCRIPT_TITLE + ' - ver.' + SCRIPT_VERSION);
-		thisObj.dlg.margins = [unit * 1.5, unit * 1.5, unit * 1.5, unit * 1.5];
+		thisObj.dlg.margins = [unit * 2, unit * 2, unit * 2, unit * 2];
 
 		thisObj.panelHorizontal = thisObj.dlg.add('panel', undefined, '水平方向：');
-		thisObj.panelHorizontal.margins = [unit, unit, unit, unit];
-		thisObj.panelHorizontal.alignment = 'left';
+		thisObj.panelHorizontal.margins = [unit * 2, unit * 2, unit * 2, unit * 1.5];
+		thisObj.panelHorizontal.alignment = 'fill';
 		thisObj.panelHorizontal.orientation = 'row';
 		thisObj.panelHorizontal.name = 'horizontal-group';
 
 		thisObj.panelVertical = thisObj.dlg.add('panel', undefined, '垂直方向：');
-		thisObj.panelVertical.margins = [unit, unit, unit, unit];
-		thisObj.panelVertical.alignment = 'left';
+		thisObj.panelVertical.margins = [unit * 2, unit * 2, unit * 2, unit * 1.5];
+		thisObj.panelVertical.alignment = 'fill';
 		thisObj.panelVertical.orientation = 'row';
 		thisObj.panelVertical.name = 'vertical-group';
 
 		thisObj.optionGroup = thisObj.dlg.add('group', undefined);
 		thisObj.optionGroup.margins = [0, 0, 0, 0];
-		thisObj.optionGroup.alignment = 'center';
+		thisObj.optionGroup.alignment = 'fill';
 		thisObj.optionGroup.orientation = 'column';
 		thisObj.optionGroup.name = 'option-group';
 
 		thisObj.options = [
-			thisObj.optionGroup.add('group', undefined),
+			thisObj.optionGroup.add('panel', undefined, '整列の基準：'),
 			thisObj.optionGroup.add('group', undefined)
 		];
 
@@ -76,66 +76,81 @@ http://www.graphicartsunit.com/
 		thisObj.buttonGroup.name = 'button-group';
 
 		// horizontal direction 
-		thisObj.lineHorizontal = [
+		thisObj.horizontalLines = [
 			thisObj.panelHorizontal.add('checkbox', undefined, '左'),
 			thisObj.panelHorizontal.add('checkbox', undefined, '中央'),
 			thisObj.panelHorizontal.add('checkbox', undefined, '右')
 		];
-		if(settings.horizontal > thisObj.lineHorizontal.length - 1 || isNaN(settings.horizontal)) {
+		if(settings.horizontal > thisObj.horizontalLines.length - 1 || isNaN(settings.horizontal)) {
 			settings.horizontal = -1;
 		} else {
 			settings.horizontal = Math.floor(settings.horizontal);
 		}
-		for (var key in thisObj.lineHorizontal) {
-			thisObj.lineHorizontal[key].name = 'horizontal-' + key;
-			thisObj.lineHorizontal[key].minimumSize = [70, undefined];
-			thisObj.lineHorizontal[key].value = false;
-			thisObj.lineHorizontal[key].alignment = 'left';
-			thisObj.lineHorizontal[key].addEventListener('click', preview);
-			thisObj.lineHorizontal[key].onClick = function(){
-					if(ILLUSTRATOR_VERSION >= 20) this.dispatchEvent(new UIEvent('click'));
+		for (var key in thisObj.horizontalLines) {
+			thisObj.horizontalLines[key].name = 'horizontal-' + key;
+			thisObj.horizontalLines[key].characters = 4;
+			thisObj.horizontalLines[key].value = false;
+			thisObj.horizontalLines[key].alignment = 'left';
+			thisObj.horizontalLines[key].addEventListener('click', preview);
+			thisObj.horizontalLines[key].onClick = function(){
+					if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 			};
 		}
-		if(thisObj.lineHorizontal[settings.horizontal]) thisObj.lineHorizontal[settings.horizontal].value = true;
+		if(thisObj.horizontalLines[settings.horizontal]) thisObj.horizontalLines[settings.horizontal].value = true;
 
 		// Vertical direction 
-		thisObj.lineVertical = [
+		thisObj.verticalLines = [
 			thisObj.panelVertical.add('checkbox', undefined, '上'),
 			thisObj.panelVertical.add('checkbox', undefined, '中段'),
 			thisObj.panelVertical.add('checkbox', undefined, '下')
 		];
-		if(settings.vertical > thisObj.lineVertical.length - 1 || isNaN(settings.vertical)) {
+		if(settings.vertical > thisObj.verticalLines.length - 1 || isNaN(settings.vertical)) {
 			settings.vertical = -1;
 		} else {
 			settings.vertical = Math.floor(settings.vertical);
 		}
-		for (var key in thisObj.lineVertical) {
-			thisObj.lineVertical[key].name = 'vertical-' + key;
-			thisObj.lineVertical[key].minimumSize = [70, undefined];
-			thisObj.lineVertical[key].value = false;
-			thisObj.lineVertical[key].alignment = 'left';
-			thisObj.lineVertical[key].addEventListener('click', preview);
-			thisObj.lineVertical[key].onClick = function(){
-					if(ILLUSTRATOR_VERSION >= 20) this.dispatchEvent(new UIEvent('click'));
+		for (var key in thisObj.verticalLines) {
+			thisObj.verticalLines[key].name = 'vertical-' + key;
+			thisObj.verticalLines[key].characters = 4;
+			thisObj.verticalLines[key].value = false;
+			thisObj.verticalLines[key].alignment = 'left';
+			thisObj.verticalLines[key].addEventListener('click', preview);
+			thisObj.verticalLines[key].onClick = function(){
+					if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 			};
 		}
-		if(thisObj.lineVertical[settings.horizontal]) thisObj.lineVertical[settings.horizontal].value = true;
+		if(thisObj.verticalLines[settings.horizontal]) thisObj.verticalLines[settings.horizontal].value = true;
 
 		// Base area 
-		thisObj.options[0].add('statictext', undefined, '整列の基準：');
-		thisObj.options[0].alignment = 'left';
-		thisObj.options[0].margins = [unit * 0, 0, unit * 0, unit];
-		thisObj.alignBase = thisObj.options[0].add('dropdownlist', undefined, ['アートボード', '選択範囲', '最前面オブジェクト',　'最背面オブジェクト']);
-		thisObj.alignBase.selection = settings.base;
-		thisObj.alignBase.addEventListener('change', preview);
+		thisObj.options[0].alignment = 'fill';
+		thisObj.options[0].orientation = 'column';
+		thisObj.options[0].margins = [unit * 2, unit * 2, unit * 2, unit * 1.5];
+		thisObj.alignBases = [
+			thisObj.options[0].add('radiobutton',undefined, 'アートボード'),
+			thisObj.options[0].add('radiobutton', undefined, '選択範囲'),
+			thisObj.options[0].add('radiobutton', undefined, '最前面オブジェクト'),
+			thisObj.options[0].add('radiobutton', undefined, '最背面オブジェクト')
+		];
+		for (var key in thisObj.alignBases) {
+			thisObj.alignBases[key].name = 'base-' + key;
+			thisObj.alignBases[key].titleLayout = { alignment: ['left', 'center'], characters: 20 };
+			thisObj.alignBases[key].value = false;
+			thisObj.alignBases[key].alignment = 'left';
+			thisObj.alignBases[key].addEventListener('click', preview);
+			thisObj.alignBases[key].onClick = function(){
+					if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
+			};
+		}
+		if(thisObj.alignBases[settings.base]) thisObj.alignBases[settings.base].value = true;
 
 		thisObj.options[1].alignment = 'left';
+		thisObj.options[1].margins = [0, unit, 0, 0];
 		thisObj.previewArea = thisObj.options[1].add('checkbox', undefined, '整列の範囲をハイライト');
 		thisObj.previewArea.name = 'previewArea';
 		thisObj.previewArea.value = settings.previewArea;
 		thisObj.previewArea.addEventListener('click', preview);
 		thisObj.previewArea.onClick = function(){
-				if(ILLUSTRATOR_VERSION >= 20) this.dispatchEvent(new UIEvent('click'));
+				if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 		};
 
 		thisObj.cancel = thisObj.buttonGroup.add('button', undefined, 'キャンセル');
@@ -149,13 +164,13 @@ http://www.graphicartsunit.com/
 					case 'horizontal-1' :
 					case 'horizontal-2' :
 						event.target.value = true;
-						if(settings.horizontal !== -1) thisObj.lineHorizontal[settings.horizontal].value = false;
+						if(settings.horizontal !== -1) thisObj.horizontalLines[settings.horizontal].value = false;
 						break;
 					case 'vertical-0' :
 					case 'vertical-1' :
 					case 'vertical-2' :
 						event.target.value = true;
-						if(settings.vertical !== -1) thisObj.lineVertical[settings.vertical].value = false;
+						if(settings.vertical !== -1) thisObj.verticalLines[settings.vertical].value = false;
 						break;
 					default :
 						break;
@@ -191,9 +206,9 @@ http://www.graphicartsunit.com/
 
 	};
 	MainDialog.prototype.updateSettings = function() {
-		settings.horizontal = this.getSelectedIndex(this.lineHorizontal);
-		settings.vertical = this.getSelectedIndex(this.lineVertical);
-		settings.base = this.alignBase.selection.index;
+		settings.horizontal = this.getSelectedIndex(this.horizontalLines);
+		settings.vertical = this.getSelectedIndex(this.verticalLines);
+		settings.base = this.getSelectedIndex(this.alignBases);
 		settings.previewArea = this.previewArea.value;
 	};
 	MainDialog.prototype.getSelectedIndex = function(array) {
