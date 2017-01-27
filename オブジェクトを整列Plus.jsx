@@ -13,15 +13,17 @@ http://www.graphicartsunit.com/
 		'vertical' : 1,
 		'base' : 3,
 		'previewArea' : false,
-		'showDialog' : true
+		'showDialog' : true,
+		'widthAltKey' : true
 	};
 
 	// ダイアログ非表示で実行するときは、上記 settings の値で挙動を設定
 	// 'vertical'    -> 水平方向［-1:移動なし｜0:左｜1:中央｜2:右］
 	// 'horizontal'  -> 垂直方向［-1:移動なし｜0:上｜1:中段｜2:下］
 	// 'base'        -> 整列の基準［0:アートボード｜1:選択範囲｜2:最前面オブジェクト｜3:最背面オブジェクト］
-	// 'previewArea' -> 整列基準の範囲をハイライトする［false:しない｜true:する］
-	// 'showDialog'  -> ダイアログを表示する［false:しない｜true:する］
+	// 'previewArea' -> 整列基準の範囲をハイライト［false:しない｜true:する］
+	// 'showDialog'  -> ダイアログを表示［false:しない｜true:する］
+	// 'widthAltKey'  -> option（Alt）キーを押しながら実行でダイアログを強制表示［false:しない｜true:する］
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
@@ -153,8 +155,8 @@ http://www.graphicartsunit.com/
 				if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 		};
 
-		thisObj.cancel = thisObj.buttonGroup.add('button', undefined, 'キャンセル');
-		thisObj.ok = thisObj.buttonGroup.add('button', undefined, '実行');
+		thisObj.cancel = thisObj.buttonGroup.add('button', undefined, 'キャンセル', {name: 'cancel'});
+		thisObj.ok = thisObj.buttonGroup.add('button', undefined, '実行', { name:'ok'});
 
 		// Preview
 		function preview(event) {
@@ -518,7 +520,7 @@ http://www.graphicartsunit.com/
 	} else if (sel.length <= 0) {
 		alert('オブジェクトが選択されていません');
 	} else {
-		if(settings.showDialog) {
+		if(settings.showDialog || (settings.widthAltKey && ScriptUI.environment.keyboardState.altKey)) {
 			dialog = new MainDialog();
 			dialog.showDialog();
 		} else {
