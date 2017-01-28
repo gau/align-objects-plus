@@ -13,7 +13,7 @@ http://www.graphicartsunit.com/
 		'vertical' : 1,
 		'base' : 3,
 		'previewArea' : false,
-		'showDialog' : true,
+		'showDialog' : false,
 		'widthAltKey' : true
 	};
 
@@ -27,13 +27,14 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.6';
+	const SCRIPT_VERSION = '0.5.7';
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 
 	// Document and selection
 	var doc = app.activeDocument;
 	var sel = doc.selection;
+	var forciblyShowDialog = settings.widthAltKey && ScriptUI.environment.keyboardState.altKey;
 
 	// UI Dialog
 	function MainDialog() {
@@ -121,7 +122,7 @@ http://www.graphicartsunit.com/
 					if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 			};
 		}
-		if(thisObj.verticalLines[settings.horizontal]) thisObj.verticalLines[settings.horizontal].value = true;
+		if(thisObj.verticalLines[settings.vertical]) thisObj.verticalLines[settings.vertical].value = true;
 
 		// Base area 
 		thisObj.options[0].alignment = 'fill';
@@ -301,7 +302,7 @@ http://www.graphicartsunit.com/
 			if(settings.previewArea) drawPreviewArea(baseProp.bounds);
 		} else {
 			// Save Settings
-			if(settings.showDialog) saveSettings();
+			if(settings.showDialog || forciblyShowDialog) saveSettings();
 		}
 
 	}
@@ -465,8 +466,8 @@ http://www.graphicartsunit.com/
 		'path' : ''
 	};
 
-	if(settings.showDialog) {
-		saveOptions.path = getSettingFilePath(saveOptions);
+	saveOptions.path = getSettingFilePath(saveOptions);
+	if(settings.showDialog || forciblyShowDialog) {
 		settings = loadSettings() ? loadSettings() : settings;
 	}
 
@@ -520,7 +521,7 @@ http://www.graphicartsunit.com/
 	} else if (sel.length <= 0) {
 		alert('オブジェクトが選択されていません');
 	} else {
-		if(settings.showDialog || (settings.widthAltKey && ScriptUI.environment.keyboardState.altKey)) {
+		if(settings.showDialog || forciblyShowDialog) {
 			dialog = new MainDialog();
 			dialog.showDialog();
 		} else {
