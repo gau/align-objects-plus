@@ -102,12 +102,12 @@ Illustrator標準の整列機能を使ってテキストオブジェクトを揃
 
 <div class="fig center"><img src="http://www.graphicartsunit.com/saucer/images/align-objects-plus/fig04.png" alt="カスタマイズ" class="noshadow"></div>
 
-10行目あたりにある`settings`の各値を変更することで、ダイアログを省略した整列ができます。ダイアログを省略するには、`showDialog`を`false`にしたうえで、その他の値を希望する挙動に合わせておきます。また、`withAltKey`を`true`にしておくことで、ダイアログ省略設定時でも一時的に表示可能です。下記を参考に、テキストエディタでスクリプトを直接編集してください。
+10行目あたりにある`settings`の各値を変更することで、ダイアログを省略した整列ができます。ダイアログを省略するには、`showDialog`を`false`にしたうえで、その他の値を希望する挙動に合わせておきます。また、`withAltKey`を`true`にしておくと、ダイアログ省略設定時でもoption（Alt）キーを押しながらスクリプトを実行することで一時的にダイアログを使った整列が可能です。下記を参考に、テキストエディタでスクリプトを開いて直接編集してください。
 
 | キー | 型 | 説明 | 値 |
 |:-----|:-----|:-----|:-----|
 | vertical | Number | 水平方向の揃え | -1：移動なし｜0：左｜1：中央｜2：右 |
-| horizontal | Number | 垂直方向の揃え | -1：移動なし｜0：左｜1：中央｜2：右 |
+| horizontal | Number | 垂直方向の揃え | -1：移動なし｜0：上｜1：中段｜2：下 |
 | base | Number | 整列の基準 | 0：アートボード｜1：選択範囲｜2：最前面オブジェクト｜3：最背面オブジェクト |
 | previewArea | Boolean | 整列基準範囲のハイライト表示 | false：しない｜true：する |
 | showDialog | Boolean | ダイアログを表示 | false：しない｜true：する |
