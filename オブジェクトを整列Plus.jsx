@@ -13,7 +13,7 @@ http://www.graphicartsunit.com/
 		'vertical' : 1,
 		'base' : 3,
 		'previewArea' : false,
-		'showDialog' : false,
+		'showDialog' : true,
 		'widthAltKey' : true
 	};
 
