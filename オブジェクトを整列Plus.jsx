@@ -28,8 +28,10 @@ http://www.graphicartsunit.com/
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
 	const SCRIPT_VERSION = '0.5.7';
-	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
+	const SUFFIX_NUMBER = Math.floor(Math.random() * 10000000000);
+	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_' + SUFFIX_NUMBER;
+	const TEMP_GROUPNAME = '_gau_temp_pluginitem_group_' + SUFFIX_NUMBER;
 
 	// Document and selection
 	var doc = app.activeDocument;
@@ -295,6 +297,9 @@ http://www.graphicartsunit.com/
 			// Translate the target
 			targetsProps[key].item.translate(targetsProps[key].gap[0], targetsProps[key].gap[1]);
 
+			// Ungrouping to PluginItems
+			if(targetsProps[key].item.typename === 'GroupItem' && targetsProps[key].item.name === TEMP_GROUPNAME) ungroupingItems(targetsProps[key].item);
+
 		}
 
 		if(preview) {
@@ -308,10 +313,11 @@ http://www.graphicartsunit.com/
 	}
 
 	// Get target objects
-	function getTargetObjects(o) {
+	function getTargetObjects(objects) {
 		var targets = [];
-		for(var key in o) {
-			targets.push(o[key]);
+		for(var key in objects) {
+			var item = objects[key].typename === 'PluginItem' ? groupingItems(objects[key]) : objects[key];
+			targets.push(item);
 		}
 		return targets;
 	}
@@ -414,6 +420,29 @@ http://www.graphicartsunit.com/
 			ca.totalSize.push(chara[i].characterAttributes.size * chara[i].characterAttributes.verticalScale / 100);
 		}
 		return ca;
+	}
+
+	// Grouping
+	function groupingItems(items) {
+		var gis = items.length ? items : [items];
+		var gi = doc.groupItems.add();
+		gi.name = TEMP_GROUPNAME;
+		gi.move(gis[0], ElementPlacement.PLACEBEFORE);
+		for(var i=0; i < gis.length; i++){
+			gis[i].move(gi, ElementPlacement.PLACEATEND);
+		}
+		return gi;
+	}
+
+	// Ungroup
+	function ungroupingItems(gi) {
+		if(gi.typename !== 'GroupItem') return false;
+		var items = gi.pageItems;
+		for(var i=0; i < items.length; i++){
+			items[i].move(gi, ElementPlacement.PLACEBEFORE);
+		}
+		gi.remove();
+		return items;
 	}
 
 	// Draw preview area
