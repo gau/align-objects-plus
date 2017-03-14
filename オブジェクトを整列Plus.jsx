@@ -27,7 +27,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.8';
+	const SCRIPT_VERSION = '0.5.9';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 	const SUFFIX_NUMBER = Math.floor(Math.random() * 10000000000);
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_' + SUFFIX_NUMBER;
@@ -424,21 +424,22 @@ http://www.graphicartsunit.com/
 
 	// Grouping
 	function groupingItems(items) {
+		var targetLayer = items.layer;
 		var gis = items.length ? items : [items];
-		var gi = doc.groupItems.add();
+		var gi = targetLayer.groupItems.add();
 		gi.name = TEMP_GROUPNAME;
 		gi.move(gis[0], ElementPlacement.PLACEBEFORE);
-		for(var i=0; i < gis.length; i++){
+		for(var i = gis.length - 1; i >= 0; i--){
 			gis[i].move(gi, ElementPlacement.PLACEATEND);
 		}
 		return gi;
 	}
 
-	// Ungroup
+	// Ungrouping
 	function ungroupingItems(gi) {
 		if(gi.typename !== 'GroupItem') return false;
 		var items = gi.pageItems;
-		for(var i=0; i < items.length; i++){
+		for(var i = items.length - 1; i >= 0; i--){
 			items[i].move(gi, ElementPlacement.PLACEBEFORE);
 		}
 		gi.remove();
