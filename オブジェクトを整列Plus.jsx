@@ -27,7 +27,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.10';
+	const SCRIPT_VERSION = '0.5.11';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 	const SUFFIX_NUMBER = Math.floor(Math.random() * 10000000000);
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_' + SUFFIX_NUMBER;
@@ -36,6 +36,7 @@ http://www.graphicartsunit.com/
 	// Document and selection
 	var doc = app.activeDocument;
 	var sel = doc.selection;
+	var wlay = sel.length ? sel[0].layer : undefined;
 	var forciblyShowDialog = settings.widthAltKey && ScriptUI.environment.keyboardState.altKey;
 
 	// UI Dialog
@@ -187,10 +188,10 @@ http://www.graphicartsunit.com/
 			} catch(er) {
 				showError(er);
 			}
-			var activeLayer = doc.activeLayer;
-			var dummyLayer = doc.layers.add();
-			doc.activeLayer = activeLayer;
-			dummyLayer.remove();
+			// var activeLayer = doc.activeLayer;
+			var dummyObject = wlay.pathItems.add();
+			// doc.activeLayer = activeLayer;
+			dummyObject.remove();
 			app.redraw();
 			app.undo();
 		}
@@ -395,15 +396,13 @@ http://www.graphicartsunit.com/
 	// Get the height form character
 	function getTextHeight(charaAttr) {
 		var activeLayer = doc.activeLayer;
-		var dummyLayer = doc.layers.add();
-		var tf = dummyLayer.textFrames.add();
+		var tf = wlay.textFrames.add();
 		tf.name = "_temp_textframe_";
 		tf.contents = "D";
 		tf.textRange.characterAttributes.size = Math.max.apply(null, charaAttr.totalSize);
 		tf.textRange.characterAttributes.textFont = charaAttr.textFont[0];
 		var tempHeight = (-tf.geometricBounds[3] + tf.geometricBounds[1]);
 		tf.remove();
-		dummyLayer.remove();
 		doc.activeLayer = activeLayer;
 		return tempHeight;
 	}
@@ -484,7 +483,11 @@ http://www.graphicartsunit.com/
 	}
 
 	function showError(er) {
-		alert('エラーが発生しましたので処理を中止します\nエラー内容：' + er);
+		if(er.number === 9034) {
+			alert('編集モードでは動作しません');
+		} else {
+			alert('エラーが発生しましたので処理を中止します\nエラー内容：' + er);
+		}
 	}
 
 	// Load setting from json file
@@ -544,11 +547,20 @@ http://www.graphicartsunit.com/
 		settingFile.close();
 	}
 
+	// is Isolation Mode
+	try {
+		var duumyLayer = doc.layers.add();
+		duumyLayer.remove();
+	} catch(er) {
+		showError(er);
+		return false;
+	}
+
 	// Show dialog
 	var dialog;
 	if (!doc) {
 		alert('対象ドキュメントがありません');
-	} else if (sel.length <= 0) {
+	} else if (sel.length === 0) {
 		alert('オブジェクトが選択されていません');
 	} else {
 		if(settings.showDialog || forciblyShowDialog) {
