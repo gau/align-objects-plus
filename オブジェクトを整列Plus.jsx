@@ -27,7 +27,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.12';
+	const SCRIPT_VERSION = '0.5.13';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 	const SUFFIX_NUMBER = Math.floor(Math.random() * 10000000000);
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_' + SUFFIX_NUMBER;
@@ -200,11 +200,11 @@ http://www.graphicartsunit.com/
 			} catch(er) {
 				showError(er);
 			}
-			// var activeLayer = doc.activeLayer;
-			var dummyObject = wlay.pathItems.add();
-			// doc.activeLayer = activeLayer;
-			dummyObject.remove();
 			app.redraw();
+			// var activeLayer = doc.activeLayer;
+			// doc.activeLayer = activeLayer;
+			var dummyObject = wlay.pathItems.add();
+			dummyObject.remove();
 			app.undo();
 		}
 		preview(null);
