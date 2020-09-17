@@ -27,7 +27,7 @@ http://www.graphicartsunit.com/
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.11';
+	const SCRIPT_VERSION = '0.5.12';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 	const SUFFIX_NUMBER = Math.floor(Math.random() * 10000000000);
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_' + SUFFIX_NUMBER;
@@ -72,6 +72,7 @@ http://www.graphicartsunit.com/
 
 		thisObj.options = [
 			thisObj.optionGroup.add('panel', undefined, '整列の基準：'),
+			thisObj.optionGroup.add('group', undefined),
 			thisObj.optionGroup.add('group', undefined)
 		];
 
@@ -99,7 +100,7 @@ http://www.graphicartsunit.com/
 			thisObj.horizontalLines[key].alignment = 'left';
 			thisObj.horizontalLines[key].addEventListener('click', preview);
 			thisObj.horizontalLines[key].onClick = function(){
-					if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
+				if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 			};
 		}
 		if(thisObj.horizontalLines[settings.horizontal]) thisObj.horizontalLines[settings.horizontal].value = true;
@@ -121,8 +122,8 @@ http://www.graphicartsunit.com/
 			thisObj.verticalLines[key].value = false;
 			thisObj.verticalLines[key].alignment = 'left';
 			thisObj.verticalLines[key].addEventListener('click', preview);
-			thisObj.verticalLines[key].onClick = function(){
-					if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
+			thisObj.verticalLines[key].onClick = function () {
+				if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 			};
 		}
 		if(thisObj.verticalLines[settings.vertical]) thisObj.verticalLines[settings.vertical].value = true;
@@ -144,19 +145,30 @@ http://www.graphicartsunit.com/
 			thisObj.alignBases[key].alignment = 'left';
 			thisObj.alignBases[key].addEventListener('click', preview);
 			thisObj.alignBases[key].onClick = function(){
-					if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
+				if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 			};
 		}
 		if(thisObj.alignBases[settings.base]) thisObj.alignBases[settings.base].value = true;
+
 
 		thisObj.options[1].alignment = 'left';
 		thisObj.options[1].margins = [0, unit, 0, 0];
 		thisObj.previewArea = thisObj.options[1].add('checkbox', undefined, '整列の範囲をハイライト');
 		thisObj.previewArea.name = 'previewArea';
+		if (isIsolationMode()) {
+			thisObj.previewArea.enabled = false;
+			thisObj.options[2].alignment = 'left';
+			thisObj.options[2].margins = [0, 0, 0, 0];
+			thisObj.messageArea = thisObj.options[2].add('statictext', undefined, '現在整列範囲のハイライト機能を利用できません', { multiline: true });
+			thisObj.messageArea.preferredSize = [-1, 40];
+			thisObj.messageArea.characters = 21;
+		} else {
+			thisObj.previewArea.enabled = true;
+		}
 		thisObj.previewArea.value = settings.previewArea;
 		thisObj.previewArea.addEventListener('click', preview);
 		thisObj.previewArea.onClick = function(){
-				if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
+			if(ILLUSTRATOR_VERSION >= 17) this.dispatchEvent(new UIEvent('click'));
 		};
 
 		thisObj.cancel = thisObj.buttonGroup.add('button', undefined, 'キャンセル', {name: 'cancel'});
@@ -234,7 +246,7 @@ http://www.graphicartsunit.com/
 	function mainProcess(preview) {
 
 		// Get target objects and properties
-		var targets = getTargetObjects(sel);
+		var targets = (isIsolationMode() && sel[0].typename === 'GroupItem') ? sel[0].pageItems : getTargetObjects(sel);
 		var targetsProps = [];
 		for (var i = 0; i < targets.length; i++) {
 			targetsProps.push(getProperties(targets[i]));
@@ -305,7 +317,7 @@ http://www.graphicartsunit.com/
 
 		if(preview) {
 			// Draw preview area
-			if(settings.previewArea) drawPreviewArea(baseProp.bounds);
+			if (settings.previewArea && !isIsolationMode()) drawPreviewArea(baseProp.bounds);
 		} else {
 			// Save Settings
 			if(settings.showDialog || forciblyShowDialog) saveSettings();
@@ -421,7 +433,7 @@ http://www.graphicartsunit.com/
 		return ca;
 	}
 
-// Grouping
+	// Grouping
 	function groupingItems(items) {
 		var gis = items.length ? items : [items];
 		var targetLayer = gis[0].layer;
@@ -548,11 +560,14 @@ http://www.graphicartsunit.com/
 	}
 
 	// is Isolation Mode
-	try {
-		var duumyLayer = doc.layers.add();
-		duumyLayer.remove();
-	} catch(er) {
-		showError(er);
+	function isIsolationMode() {
+		try {
+			var duumyLayer = doc.layers.add();
+			duumyLayer.remove();
+		} catch(er) {
+			// showError(er);
+			return true;
+		}
 		return false;
 	}
 
