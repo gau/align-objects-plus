@@ -14,7 +14,7 @@ http://www.graphicartsunit.com/
 		'base' : 3,
 		'previewArea' : false,
 		'showDialog' : true,
-		'widthAltKey' : true
+		'withAltKey' : true
 	};
 
 	// ダイアログ非表示で実行するときは、上記 settings の値で挙動を設定
@@ -23,11 +23,11 @@ http://www.graphicartsunit.com/
 	// 'base'        -> 整列の基準［0:アートボード｜1:選択範囲｜2:最前面オブジェクト｜3:最背面オブジェクト］
 	// 'previewArea' -> 整列基準の範囲をハイライト［false:しない｜true:する］
 	// 'showDialog'  -> ダイアログを表示［false:しない｜true:する］
-	// 'widthAltKey'  -> option（Alt）キーを押しながら実行でダイアログを強制表示［false:しない｜true:する］
+	// 'withAltKey'  -> option（Alt）キーを押しながら実行でダイアログを強制表示［false:しない｜true:する］
 
 	// Constant
 	const SCRIPT_TITLE = 'オブジェクトを整列Plus';
-	const SCRIPT_VERSION = '0.5.13';
+	const SCRIPT_VERSION = '0.5.14';
 	const ILLUSTRATOR_VERSION = Number(app.version.split('.')[0]);
 	const SUFFIX_NUMBER = Math.floor(Math.random() * 10000000000);
 	const PEVIEW_LAYERNAME = '_gau_Align_Area_Preview_' + SUFFIX_NUMBER;
@@ -37,7 +37,7 @@ http://www.graphicartsunit.com/
 	var doc = app.activeDocument;
 	var sel = doc.selection;
 	var wlay = sel.length ? sel[0].layer : undefined;
-	var forciblyShowDialog = settings.widthAltKey && ScriptUI.environment.keyboardState.altKey;
+	var forciblyShowDialog = settings.withAltKey && ScriptUI.environment.keyboardState.altKey;
 
 	// UI Dialog
 	function MainDialog() {
